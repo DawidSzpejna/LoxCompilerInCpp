@@ -14,18 +14,25 @@ term           → factor ( ( "-" | "+" ) factor )* ;
 
 factor         → unary ( ( "/" | "*" ) unary )* ;
 
-unary          → ( "!" | "-" ) unary | primary ;
+unary          → ( "!" | "-" ) unary | call ;
+
+call           → primary ( "(" arguments? ")" )* ;
 
 primary        → NUMBER | STRING | "true" | "false" | "nil" | "(" expression ")" | IDENTIFIER ;
 
 
 
+arguments      → expression ( "," expression )* ;
+
+parameters     → IDENTIFIER ( "," IDENTIFIER )* ;
+
+
 
 program        → declaration* EOF ;
 
-declaration    → varDecl | statement ;
+declaration    → funDecl | varDecl | statement ;
 
-statement      → exprStmt | forStmt | ifStmt | printStmt | whileStmt | block ;
+statement      → exprStmt | forStmt | ifStmt | printStmt | returnStmt | whileStmt | block ;
 
 exprStmt       → expression ";" ;
 
@@ -40,3 +47,9 @@ ifStmt         → "if" "(" expression ")" statement ( "else" statement )? ;
 whileStmt      → "while" "(" expression ")" statement ;
 
 forStmt        → "for" "(" ( varDecl | exprStmt | ";" ) expression? ";" expression? ")" statement ;
+
+funDecl        → "fun" function ;
+
+function       → IDENTIFIER "(" parameters? ")" block ;
+
+returnStmt     → "return" expression? ";" ;

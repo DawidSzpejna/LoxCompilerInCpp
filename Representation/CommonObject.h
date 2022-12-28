@@ -2,8 +2,10 @@
 #define _CPPLOX_COMMONOBJECT_
 
 
+class LoxCallable;
+
+
 #include <iostream>
-#include <sstream>
 
 
 class Object {
@@ -19,12 +21,16 @@ public:
 
     bool have_nill;
 
+    bool have_function;
+    LoxCallable *fun_object;
+
 public:
     Object();
     Object(std::string str);
     Object(float number);
     Object(bool bl);
     Object(void *ptr);
+    Object(LoxCallable *fun);
 
     void ClearMe();
     Object *Clone();

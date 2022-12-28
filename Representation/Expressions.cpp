@@ -2,6 +2,10 @@
 #include <sstream>
 
 
+#include "Token.h"
+#include "CommonObject.h"
+
+
 // ------------------- Assign --------------------------------------
 
 
@@ -44,6 +48,26 @@ Binary::~Binary() {
     delete left;
     delete this_operator;
     delete right;
+}
+
+
+// ------------------- Call -----------------------------------------
+
+
+Call::Call(Expr *callee, Token *paren, std::vector<Expr *> *arguments) {
+    this->callee = callee;
+    this->paren = paren;
+    this->arguments = arguments;
+}
+
+
+std::string Call::acceptS(ExprVisitor<std::string> *visitor) {
+    return visitor->visitCallExpr(this);
+}
+
+
+Object *Call::accpetO(ExprVisitor<Object *> *visitor) {
+    return visitor->visitCallExpr(this);
 }
 
 

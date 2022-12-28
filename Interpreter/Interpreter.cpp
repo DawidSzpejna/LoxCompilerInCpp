@@ -1,8 +1,44 @@
 #include "Interpreter.h"
 
 
+#include "../Representation/Stmt.h"
+#include "../Representation/Expressions.h"
+#include "../Representation/Environment.h"
+#include "../Representation/LoxCallable.h"
+#include "../Errors/CppLoxError.h"
+#include "../Errors/Runtime/RuntimeError.h"
+#include "../Representation/CommonObject.h"
+#include "../Errors/GoodErrors/ReturnException.h"
+
+
+// ------------------------------------------- NATIVE FUNCTIONS
+
+
+class : public LoxCallable {
+public:
+    int arity() override {
+        return 0;
+    }
+
+    Object *call(Interpreter *interpreter, std::vector<Object *> *arguments) override {
+        return new Object(12.0f);
+    }
+
+    std::string toString() {
+        return "<native clock()>";
+    }
+} test;
+
+
+// -------------------------------------------------------------
+
+
 Interpreter::Interpreter() {
-    environment = new Environmnet();
+    globals = new Environment();
+    environment = globals;
+
+    Object *clock_function = new Object(&test);
+    globals->define("clock", clock_function);
 }
 
 
@@ -126,6 +162,31 @@ Object *Interpreter::visitBinaryExpr(Binary* expr) {
 }
 
 
+Object *Interpreter::visitCallExpr(Call *expr) {
+    Object *callee = evaluate(expr->callee);
+
+    std::vector<Object *> *arguments = new std::vector<Object *>();
+    for (auto it = expr->arguments->begin(); it != expr->arguments->end(); it++) {
+        arguments->push_back((Object *)evaluate(*it));
+    }
+
+    if (!callee->have_function) {
+        throw RuntimeError(expr->paren, "Can only call functions and classes.");
+    }
+
+    LoxCallable *function = callee->fun_object;
+
+    if (function->arity() != arguments->size()) {
+        std::stringstream message;
+        message << "Expected " << function->arity() << " arguments but got " << arguments->size() << ".";
+
+        throw RuntimeError(expr->paren, message.str());
+    }
+
+    return function->call(this, arguments);
+}
+
+
 Object *Interpreter::visitUnaryExpr(Unary* expr) {
     Object *right = evaluate(expr->right);
 
@@ -189,12 +250,18 @@ Object *Interpreter::visitAssignExpr(Assign *expr) {
 
 
 void Interpreter::visitBlockStmt(Block *stmt) {
-    executeBlock(stmt->statements, new Environmnet(environment));
+    executeBlock(stmt->statements, new Environment(environment));
 }
 
 
 void Interpreter::visitExpressionStmt(Expression *stmt) {
     evaluate(stmt->expression);
+}
+
+
+void Interpreter::visitFunctionStmt(Function *stmt) {
+    LoxFunction *function = new LoxFunction(stmt, this->environment);
+    environment->define(stmt->name->lexem, new Object(function));
 }
 
 
@@ -205,6 +272,14 @@ void Interpreter::visitIfStmt(If *stmt) {
     else if (stmt->elseBranch != nullptr) {
         execute(stmt->elseBranch);
     }
+}
+
+
+void Interpreter::visitReturnStmt(Return *stmt) {
+    Object *value = nullptr;
+    if (stmt->value != nullptr) value = evaluate(stmt->value);
+
+    throw ReturnException(value);
 }
 
 
@@ -228,7 +303,6 @@ void Interpreter::visitWhileStmt(While *stmt) {
     while (isTruthy(evaluate(stmt->condition))) {
         execute(stmt->body);
     }
-
 }
 
 
@@ -242,22 +316,27 @@ void Interpreter::execute(Stmt *stmt) {
 }
 
 
-void Interpreter::executeBlock(std::vector<Stmt *> *statements, Environmnet *environment) {
-    Environmnet *previous = this->environment;
+void Interpreter::executeBlock(std::vector<Stmt *> *statements, Environment *environment) {
+    Environment *previous = this->environment;
+    bool CatchedSomething = false;
 
-    try {
+    try
+    {
         this->environment = environment;
 
         for (auto it = statements->begin(); it != statements->end(); it++) {
             execute(*it);
         }
     }
-    catch (std::exception e)
-    {
-        // nie rób nic...
+    catch (...) {
+        auto e = std::current_exception();
+        this->environment = previous;
+        CatchedSomething = true;
+
+        throw;
     }
 
-    this->environment = previous;
+    if (!CatchedSomething) this->environment = previous;
 }
 
 

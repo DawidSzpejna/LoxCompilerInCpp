@@ -1,6 +1,9 @@
 #include "Stmt.h"
 
 
+#include "Expressions.h"
+
+
 // ------------------- Block --------------------------------------
 
 
@@ -29,6 +32,20 @@ void If::accpetV(StmtVisitor<void> *visitor) {
 }
 
 
+// ------------------- Function ----------------------------------------
+
+
+Function::Function (Token *name, std::vector<Token *> *params, std::vector<Stmt *> *body) {
+    this->name = name;
+    this->params = params;
+    this->body = body;
+}
+
+void Function::accpetV(StmtVisitor<void> *visitor) {
+    visitor->visitFunctionStmt(this);
+}
+
+
 // ------------------- Expression --------------------------------------
 
 
@@ -52,6 +69,19 @@ Print::Print (Expr *expression) {
 
 void Print::accpetV(StmtVisitor<void> *visitor) {
     visitor->visitPrintStmt(this);
+}
+
+
+// ------------------- Return -----------------------------------
+
+
+Return::Return (Token *keyword, Expr *value) {
+    this->keyword = keyword;
+    this->value = value;
+}
+
+void Return::accpetV(StmtVisitor<void> *visitor) {
+    visitor->visitReturnStmt(this);
 }
 
 

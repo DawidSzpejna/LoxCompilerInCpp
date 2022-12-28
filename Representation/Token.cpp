@@ -1,6 +1,9 @@
 #include "Token.h"
 
 
+#include "CommonObject.h"
+
+
 Token::Token(TokenType type, std::string lexem, Object* literal, int line) {
     this->type = type;
     this->lexem = lexem;
@@ -9,10 +12,10 @@ Token::Token(TokenType type, std::string lexem, Object* literal, int line) {
 }
 
 
-Token::~Token()
-{
-    //delete literal;
-}
+// Token::~Token()
+// {
+//     //delete literal;
+// }
 
 
 Token *Token::clone() {

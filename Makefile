@@ -6,7 +6,7 @@ SIL ?=
 DEBUG = -g
 
 
-.PHONY: all parser scanner representation prettyprint tokens expressions main astgen cleanAst
+.PHONY: all parser scanner representation tokens expressions main astgen cleanAst returnexception
 
 
 #################################################
@@ -14,21 +14,22 @@ DEBUG = -g
 #################################################
 
 
-all: preparedir main parser scanner tokens expressions prettyprint errorcatcher commonobject \
-	 runtimeerror interpreter stmt environment
+all: preparedir main parser scanner tokens expressions errorcatcher commonobject \
+	 runtimeerror interpreter stmt environment callablers returnexception
 	@$(CXX) $(DEBUG) $(CXXFLAGS) \
+		$(BUILDDIR)/LoxCallable.o \
+		$(BUILDDIR)/CommonObject.o \
 		$(BUILDDIR)/CppLoxError.o \
 		$(BUILDDIR)/Parser.o \
 		$(BUILDDIR)/Scanner.o \
-		$(BUILDDIR)/Prettyprinter.o \
 		$(BUILDDIR)/Token.o \
 		$(BUILDDIR)/Expressions.o \
 		$(BUILDDIR)/cppLox.o \
-		$(BUILDDIR)/CommonObject.o \
 		$(BUILDDIR)/RuntimeError.o \
 		$(BUILDDIR)/Interpreter.o \
 		$(BUILDDIR)/Stmt.o \
 		$(BUILDDIR)/Environment.o \
+		$(BUILDDIR)/ReturnException.o \
 		-o cpplox
 	@printf "CppLox is completed\n"
 
@@ -66,8 +67,8 @@ stmt: Representation/Stmt.cpp
 environment: Representation/Environment.cpp
 	$(SIL)$(CXX) -c $(DEBUG) $(CXXFLAGS) Representation/Environment.cpp -o $(BUILDDIR)/Environment.o
 
-prettyprint: tools/PrettyPrinter/Prettyprinter.cpp
-	$(SIL)$(CXX) -c $(DEBUG) $(CXXFLAGS) tools/PrettyPrinter/Prettyprinter.cpp -o $(BUILDDIR)/Prettyprinter.o
+# prettyprint: tools/PrettyPrinter/Prettyprinter.cpp
+# 	$(SIL)$(CXX) -c $(DEBUG) $(CXXFLAGS) tools/PrettyPrinter/Prettyprinter.cpp -o $(BUILDDIR)/Prettyprinter.o
 
 errorcatcher: Errors/CppLoxError.cpp
 	$(SIL)$(CXX) -c $(DEBUG) $(CXXFLAGS) Errors/CppLoxError.cpp -o $(BUILDDIR)/CppLoxError.o
@@ -77,6 +78,12 @@ commonobject: Representation/CommonObject.cpp
 
 runtimeerror: Errors/Runtime/RuntimeError.cpp
 	$(SIL)$(CXX) -c $(DEBUG) $(CXXFLAGS) Errors/Runtime/RuntimeError.cpp -o $(BUILDDIR)/RuntimeError.o
+
+callablers: Representation/LoxCallable.cpp
+	$(SIL)$(CXX) -c $(DEBUG) $(CXXFLAGS) Representation/LoxCallable.cpp -o $(BUILDDIR)/LoxCallable.o
+
+returnexception: Errors/GoodErrors/ReturnException.cpp
+	$(SIL)$(CXX) -c $(DEBUG) $(CXXFLAGS) Errors/GoodErrors/ReturnException.cpp -o $(BUILDDIR)/ReturnException.o
 
 
 #################################################

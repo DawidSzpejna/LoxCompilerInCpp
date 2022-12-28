@@ -1,12 +1,13 @@
-
 #ifndef _CPPLOX_PARSER_
 #define _CPPLOX_PARSER_
 
 
-#include "../Representation/Token.h"
-#include "../Representation/Expressions.h"
-#include "../Representation/Stmt.h"
-#include "../Errors/CppLoxError.h"
+class Expr;
+class Token;
+class Stmt;
+enum class TokenType;
+
+
 #include <vector>
 #include <iostream>
 
@@ -37,9 +38,13 @@ public:
     Stmt *forStatement();
     Stmt *ifStatement();
     Stmt *printStatement();
+    Stmt *returnStatement();
     Stmt *expressionStatement();
+    Stmt *myFunction(std::string kind);
     std::vector<Stmt *> *block();
     Expr *primary();
+    Expr *finishCall(Expr *callee);
+    Expr *call();
     Expr *unary();
     Expr *factor();
     Expr *term();

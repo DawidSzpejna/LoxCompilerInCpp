@@ -4,19 +4,21 @@
 
 #include <map>
 #include <iostream>
-#include "../Errors/Runtime/RuntimeError.h"
-#include "Stmt.h"
 
 
-class Environmnet {
+class Object;
+class Token;
+
+
+class Environment {
 private:
-    Environmnet *enclosing;
+    Environment *enclosing;
     std::map<std::string, Object *>* values;
 
 public:
-    Environmnet();
-    Environmnet(Environmnet *enclosing);
-    ~Environmnet();
+    Environment();
+    Environment(Environment *enclosing);
+    ~Environment();
     void define(std::string name, Object *value);
     Object *get(Token* name);
     void assign(Token *name, Object *value);

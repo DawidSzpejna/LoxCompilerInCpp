@@ -1,13 +1,17 @@
-#include <iostream>
-#include <fstream>
-#include <sstream>
-#include <list>
 #include "Representation/Token.h"
+#include "Representation/CommonObject.h"
+#include "Representation/Stmt.h"
 #include "tools/PrettyPrinter/Prettyprinter.h"
 #include "Scanner/Scanner.h"
 #include "Parser/Parser.h"
 #include "Interpreter/Interpreter.h"
 #include "Errors/CppLoxError.h"
+
+
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <list>
 
 
 #define SCRIPT 1

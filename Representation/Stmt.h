@@ -2,31 +2,39 @@
 #define _CPPLOX_STMT_
 
 
-#include "Expressions.h"
 #include <vector>
 
 
-class Expression;
-class Print;
-class Var;
-class Block;
-class If;
-class While;
+// class Expr;
+// class Expression;
+// class Print;
+// class Var;
+// class Block;
+// class If;
+// class While;
+// class Function;
 
 
-template <typename R>
-class StmtVisitor{
-public:
-    virtual R visitBlockStmt(Block *stmt) = 0;
-    //virtual R visitClassStmt(Class stmt) = 0;
-    virtual R visitExpressionStmt(Expression *stmt) = 0;
-    //virtual R visitFunctionStmt(Function stmt) = 0;
-    virtual R visitIfStmt(If *stmt) = 0;
-    virtual R visitPrintStmt(Print *stmt) = 0;
-    //virtual R visitReturnStmt(Return stmt) = 0;
-    virtual R visitVarStmt(Var *stmt) = 0;
-    virtual R visitWhileStmt(While *stmt) = 0;
-};
+// template <typename R>
+// class StmtVisitor{
+// public:
+//     virtual R visitBlockStmt(Block *stmt) = 0;
+//     //virtual R visitClassStmt(Class stmt) = 0;
+//     virtual R visitExpressionStmt(Expression *stmt) = 0;
+//     virtual R visitFunctionStmt(Function *stmt) = 0;
+//     virtual R visitIfStmt(If *stmt) = 0;
+//     virtual R visitPrintStmt(Print *stmt) = 0;
+//     //virtual R visitReturnStmt(Return stmt) = 0;
+//     virtual R visitVarStmt(Var *stmt) = 0;
+//     virtual R visitWhileStmt(While *stmt) = 0;
+// };
+
+
+#include "../Visitors/StmtVisitor.h"
+
+
+class Expr;
+class Token;
 
 
 class Stmt {
@@ -67,6 +75,18 @@ public:
 };
 
 
+class Function : public Stmt {
+public: 
+    Function (Token *name, std::vector<Token *> *params, std::vector<Stmt *> *body);
+
+    void accpetV(StmtVisitor<void> *visitor) override;
+
+    Token *name;
+    std::vector<Token *> *params;
+    std::vector<Stmt *> *body;
+};
+
+
 class Print : public Stmt {
 public: 
     Print (Expr *expression);
@@ -85,6 +105,17 @@ public:
 
     Token *name;
     Expr *initializer;
+};
+
+
+class Return : public Stmt {
+public: 
+    Return (Token *keyword, Expr *value);
+
+    void accpetV(StmtVisitor<void> *visitor) override;
+
+    Token *keyword;
+    Expr *value;
 };
 
 

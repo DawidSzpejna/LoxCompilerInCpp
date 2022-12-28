@@ -3,8 +3,9 @@
 
 
 #include <iostream>
-#include <sstream>
-#include "CommonObject.h"
+
+
+class Object;
 
 
 enum class TokenType {
@@ -39,7 +40,7 @@ public:
 public:
     Token() {}
     Token(TokenType type, std::string lexem, Object* literal, int line);
-    ~Token();
+    // ~Token();
 
     Token *clone();
 

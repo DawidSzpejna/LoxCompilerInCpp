@@ -1,19 +1,25 @@
 #include "Environment.h"
 
 
-Environmnet::Environmnet() {
+#include "../Errors/Runtime/RuntimeError.h"
+#include "Token.h"
+#include "Stmt.h"
+#include "CommonObject.h"
+
+
+Environment::Environment() {
     values = new std::map<std::string, Object *>();
     this->enclosing = nullptr;
 }
 
 
-Environmnet::Environmnet(Environmnet *enclosing) {
+Environment::Environment(Environment *enclosing) {
     values = new std::map<std::string, Object *>();
     this->enclosing = enclosing;
 }
 
 
-Environmnet::~Environmnet() {
+Environment::~Environment() {
     delete values;
 
     if (this->enclosing != nullptr) {
@@ -22,7 +28,7 @@ Environmnet::~Environmnet() {
 }
 
 
-void Environmnet::define(std::string name, Object *value) {
+void Environment::define(std::string name, Object *value) {
     if (values->count(name) != 0) {
         values->at(name) = value;
         return;
@@ -32,7 +38,7 @@ void Environmnet::define(std::string name, Object *value) {
 }
 
 
-Object *Environmnet::get(Token* name) {
+Object *Environment::get(Token* name) {
     if (values->count(name->lexem) != 0) {
         return values->at(name->lexem);
     }
@@ -44,7 +50,7 @@ Object *Environmnet::get(Token* name) {
 }
 
 
-void Environmnet::assign(Token *name, Object *value) {
+void Environment::assign(Token *name, Object *value) {
     if (values->count(name->lexem) != 0) {
         Object *oldValue = values->at(name->lexem);
         values->at(name->lexem) = value;

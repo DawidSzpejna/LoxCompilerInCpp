@@ -6,8 +6,10 @@
 #include <vector>
 #include <map>
 
-#include "../Representation/Token.h"
 
+class Token;
+class Object;
+enum class TokenType;
 
 
 class Scanner {

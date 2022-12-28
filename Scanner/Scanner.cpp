@@ -1,5 +1,9 @@
 #include "Scanner.h"
+
+
 #include "../Errors/CppLoxError.h"
+#include "../Representation/Token.h"
+#include "../Representation/CommonObject.h"
 
 
 std::map<std::string, TokenType> Scanner::keywords = {

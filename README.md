@@ -19,6 +19,7 @@ Parser distinguish:
 
 - Delcaration:
     - Variable declaration
+    - Function declaration
     - Statement declaration:
         - For statement
         - If statement
@@ -35,6 +36,7 @@ Parser distinguish:
             - term
             - factor
             - unary
+            - call
             - primary
 
 Declarations are atoms of the parser that separate language features. Statements are everything which don't require storing data and expression are operation on data (a.k.a variables). This division of responsibilities ensures compactness of language.
@@ -52,3 +54,13 @@ Every details about Lox emplementaion will be described here.
 ## Environments
 
 Environments are implementaion of scoping where each instance point on the nearest external scope. This class is a part of `block` functionality.
+
+## Functions
+
+The Lox interpreter need a new expression and declaration (a class which inferites from `Stmt`) to impelemnt functions. 
+
+The new delcaration is responsible for containing information about function body and parameters. When the visitor function catches this statement, it adds the function name to the environment in order to register a function. Then the interpreter stores an instance of `LoxFunction` class which knows how to 'execute' functions in Lox. 
+
+The expression `Call` is related with using defined functions. If the interpreter finds this expression, it will looks for the object to 'call' in the current environment. Only if it is `LoxFunction` object, the interpreter will execute it as a function.
+
+When it comest to environments, all 'LoxFunction' objects have `closure` field which indicates the environment of origin. If the functions represented by this object is called,  the function environments has `closure` as a parent.

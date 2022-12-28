@@ -70,6 +70,7 @@ int main(int argc, char** argv)
     defineAst(outputDir, "Expr", std::list<std::string> {
         "Assign : Token name, Expr value",
         "Binary : Expr left, Token this_operator, Expr right",
+        "Call s: Expr callee, Token paren, List<Expr> arguments",
         "Grouping : Expr expression",
         "Literal  : Object value",
         "Logical  : Expr left, Token this_operator, Expr right",
@@ -80,8 +81,10 @@ int main(int argc, char** argv)
     defineAst(outputDir, "Stmt", std::list<std::string> {
         "Block : std::vector<Stmt *> *statements",
         "Expression : Expr expression",
+        "Function   : Token name, List<Token> params, List<Stmt> body",
         "If         : Expr condition, Stmt thenBranch, Stmt elseBranch",
         "Print      : Expr expression",
+        "Return     : Token keyword, Expr value",
         "Var : Token name, Expr initializer",
         "While      : Expr condition, Stmt body"
     });

@@ -1,39 +1,49 @@
 #include "CommonObject.h"
 
+
+#include "LoxCallable.h"
+
+
+#include <sstream>
+
+
 Object::Object()
 {
     ClearMe();
 }
 
 
-Object::Object(std::string str)
+Object::Object(std::string str) : Object()
 {
-    Object();
     string_literal = str;
     have_string = true;
 }
 
 
-Object::Object(float number)
+Object::Object(float number) : Object()
 {
-    Object();
     float_literal = number;
     have_float = true;
 }
 
 
-Object::Object(bool bl) 
+Object::Object(bool bl) : Object()
 {
-    Object();
     bool_literal = bl;
     have_bool = true;
 }
 
 
-Object::Object(void *ptr)
+Object::Object(void *ptr) : Object()
 {
-    Object();
     have_nill = true;
+}
+
+
+Object::Object(LoxCallable *fun)  : Object()
+{
+    have_function = true;
+    fun_object = fun;
 }
 
 
@@ -43,10 +53,12 @@ Object *Object::Clone(){
     tmp->have_float = this->have_float;
     tmp->have_nill = this->have_nill;
     tmp->have_string = this->have_string;
+    tmp->have_function = this->have_function;
     
     tmp->bool_literal = this->bool_literal;
     tmp->float_literal = this->float_literal;
     tmp->string_literal = this->string_literal;
+    tmp->fun_object = this->fun_object; // <------------- wymaga poprawy !!!
     
     return tmp;   
 }
@@ -54,7 +66,7 @@ Object *Object::Clone(){
 
 void Object::ClearMe()
 {
-    have_string = have_float = have_bool = have_nill = false;
+    have_string = have_float = have_bool = have_nill = have_function = false;
 }
 
 
@@ -72,6 +84,10 @@ std::string Object::toString() {
 
     if (have_nill) {
         return "nill";
+    }
+
+    if (have_function) {
+        return fun_object->toString();
     }
 
     return string_literal;
