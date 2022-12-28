@@ -1,0 +1,36 @@
+
+var a = 1;
+
+
+var b = 123;
+var z = 11;
+
+
+a = a * z - b;
+z = z * -2;
+
+print z;
+print a;
+
+if ( a < 0 and 1 == 0)
+    print "Test 1 if";
+else 
+    print "Test2 if";
+
+if (a > 0)
+    print "a > 0 : result";
+else
+    print "a > 0 :in else";
+
+var ii = 0;
+while (ii < 5) {
+    print ii;
+    print "In while loop";
+    ii = ii + 1;
+}
+
+for (var jj = 0; jj < ii + 1; jj = jj + 1) {
+    print jj;
+    print "In for loop";
+}
+

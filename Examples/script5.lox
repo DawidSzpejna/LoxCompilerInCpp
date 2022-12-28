@@ -1,0 +1,21 @@
+fun dupek(x) {
+    print x;
+
+    if (x <= 0) {
+        print -1;
+        return -1;
+    }
+    
+    if (x > 6) {
+        print 1;
+        return 1;
+    }
+
+    print dupek(x - 3) + 0.1;
+    print "between";
+    print x;
+    print dupek(x + 6) + 0.1;
+    return 0;
+}
+
+print dupek(6);
