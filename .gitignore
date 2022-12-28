@@ -1,0 +1,8 @@
+.vscode
+Buildings/*
+cpplox
+tools/ClassASTGenerator/Build/*
+tools/ClassASTGenerator/Products/*
+tools/PrettyPrinter
+
+
