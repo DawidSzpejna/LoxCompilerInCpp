@@ -36,6 +36,7 @@ public:
 Interpreter::Interpreter() {
     globals = new Environment();
     environment = globals;
+    locals = new std::map<Expr *, int>();
 
     Object *clock_function = new Object(&test);
     globals->define("clock", clock_function);
@@ -238,13 +239,24 @@ Object *Interpreter::visitLogicalExpr(Logical* expr) {
 
 
 Object *Interpreter::visitVariableExpr(Variable *expr) {
-    return environment->get(expr->name);
+    return lookUpVariable(expr->name, expr);
 }
 
 
 Object *Interpreter::visitAssignExpr(Assign *expr) {
     Object *value = evaluate(expr->value);
-    environment->assign(expr->name, value);
+
+    int distance = -1;
+    if (locals->count(expr) != 0) distance = (*locals)[expr];
+
+    if (distance != -1) {
+        environment->assignAt(distance, expr->name, value);
+    }
+    else {
+        globals->assign(expr->name, value);
+    }
+
+    //environment->assign(expr->name, value);
     return value;
 }
 
@@ -313,6 +325,11 @@ Object *Interpreter::evaluate(Expr *expr) {
 
 void Interpreter::execute(Stmt *stmt) {
     stmt->accpetV(this);
+}
+
+
+void Interpreter::resolve(Expr *expr, int depth) {
+    locals->insert({expr, depth});
 }
 
 
@@ -393,4 +410,19 @@ std::string Interpreter::stringify(Object *object) {
     if (object == nullptr) return "nil";
 
     return object->toString();
+}
+
+
+Object *Interpreter::lookUpVariable(Token *name, Expr *expr) {
+    int distance = -1;
+    if (locals->count(expr) != 0) {
+        distance = (*locals)[expr];
+    }
+
+    if (distance != -1) {
+        return environment->getAt(distance, name->lexem);
+    }
+    else {
+        return globals->get(name);
+    }
 }

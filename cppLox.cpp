@@ -6,6 +6,7 @@
 #include "Parser/Parser.h"
 #include "Interpreter/Interpreter.h"
 #include "Errors/CppLoxError.h"
+#include "Resolver/Resolver.h"
 
 
 #include <iostream>
@@ -88,18 +89,23 @@ void run(std::string source)
         std::cout << **it << std::endl;
     }
 
-
     Parser* parser = new Parser(tokens);
     std::vector<Stmt *> *statements = parser->parse();
 
+    // Stop if there was a syntax error.
     if (CppLoxError::hadError) return;
 
-    //AstPrinter prettyPr = AstPrinter();
+    Resolver *resolver = new Resolver(&interpreter);
+    resolver->resolve(statements);
 
-    //std::cout << prettyPr.printf(expr) + "\n"; 
+
+    // Stop if there was a resolution error.
+    if (CppLoxError::hadError) return;
+
     interpreter.interpret(statements);
 
     clean(tokens);
     clean(statements);
     delete parser;
+    delete resolver;
 }

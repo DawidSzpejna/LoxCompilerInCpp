@@ -28,6 +28,7 @@ class Call;
 #include <iostream>
 #include <sstream>
 #include <vector>
+#include <map>
 
 
 #include "../Visitors/ExprVisitor.h"
@@ -40,6 +41,7 @@ class Interpreter : public StmtVisitor<void>,
 public:
     Environment *globals;
     Environment *environment;
+    std::map<Expr *, int> *locals;
 
 public:
     Interpreter();
@@ -65,7 +67,7 @@ public:
     void visitWhileStmt(While *stmt) override;
 
     void executeBlock(std::vector<Stmt *> *statements, Environment *environment);
-
+    void resolve(Expr *expr, int depth);
 private:
     Object *evaluate(Expr *expr);
     void execute(Stmt *stmt);
@@ -75,6 +77,7 @@ private:
     void checkNumberOperand(Token *oper, Object* operad);
     void checkNumberOperands(Token *oper, Object* left, Object* right);
     std::string stringify(Object *object);
+    Object *lookUpVariable(Token *name, Expr *expr);
 };
 
 #endif /* _CPPLOX_INTERPRETER_ */

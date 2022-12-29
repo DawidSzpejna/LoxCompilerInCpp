@@ -38,6 +38,26 @@ void Environment::define(std::string name, Object *value) {
 }
 
 
+Environment *Environment::ancestor(int distance) {
+    Environment *environment = this;
+    for (int i = 0; i < distance; i++) {
+        environment = environment->enclosing;
+    }
+
+    return environment;
+}
+
+
+Object *Environment::getAt(int distance, std::string name) {
+    return (*(ancestor(distance)->values))[name];
+}
+
+
+void Environment::assignAt(int distance, Token *name, Object *value) {
+    ancestor(distance)->values->at(name->lexem) = value;
+}
+
+
 Object *Environment::get(Token* name) {
     if (values->count(name->lexem) != 0) {
         return values->at(name->lexem);

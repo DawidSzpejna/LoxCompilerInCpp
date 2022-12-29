@@ -6,7 +6,8 @@ SIL ?=
 DEBUG = -g
 
 
-.PHONY: all parser scanner representation tokens expressions main astgen cleanAst returnexception
+.PHONY: all parser scanner representation tokens \
+		expressions main astgen cleanAst returnexception resolver
 
 
 #################################################
@@ -15,7 +16,7 @@ DEBUG = -g
 
 
 all: preparedir main parser scanner tokens expressions errorcatcher commonobject \
-	 runtimeerror interpreter stmt environment callablers returnexception
+	 runtimeerror interpreter stmt environment callablers returnexception resolver
 	@$(CXX) $(DEBUG) $(CXXFLAGS) \
 		$(BUILDDIR)/LoxCallable.o \
 		$(BUILDDIR)/CommonObject.o \
@@ -30,6 +31,7 @@ all: preparedir main parser scanner tokens expressions errorcatcher commonobject
 		$(BUILDDIR)/Stmt.o \
 		$(BUILDDIR)/Environment.o \
 		$(BUILDDIR)/ReturnException.o \
+		$(BUILDDIR)/Resolver.o \
 		-o cpplox
 	@printf "CppLox is completed\n"
 
@@ -84,6 +86,9 @@ callablers: Representation/LoxCallable.cpp
 
 returnexception: Errors/GoodErrors/ReturnException.cpp
 	$(SIL)$(CXX) -c $(DEBUG) $(CXXFLAGS) Errors/GoodErrors/ReturnException.cpp -o $(BUILDDIR)/ReturnException.o
+
+resolver: Resolver/Resolver.cpp
+	$(SIL)$(CXX) -c $(DEBUG) $(CXXFLAGS) Resolver/Resolver.cpp -o $(BUILDDIR)/Resolver.o
 
 
 #################################################
