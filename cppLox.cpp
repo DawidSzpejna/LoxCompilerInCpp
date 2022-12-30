@@ -19,8 +19,8 @@
 
 
 void runFile(std::string path);
-void runPrompt();
 void run(std::string source);
+
 
 template <typename R>
 void clean(std::vector<R *> *tokens)
@@ -36,21 +36,14 @@ void clean(std::vector<R *> *tokens)
 static Interpreter interpreter = Interpreter();
 
 
-using namespace std;
-
-
 int main(int argc, char** argv)
 {
-
-    if (argc > HAVE_SCRIPT) {
-        cerr << "Usage: cpplox [script]\n";
-        exit(64);
-    }
-    else if (argc == HAVE_SCRIPT) {
+    if (argc == HAVE_SCRIPT) {
         runFile(argv[SCRIPT]);
     }
     else {
-        runPrompt();
+        std::cerr << "Usage: cpplox [script]\n";
+        exit(64);
     }
 
     return 0;
@@ -60,6 +53,11 @@ int main(int argc, char** argv)
 void runFile(std::string path)
 {
     std::ifstream my_source_file(path);
+    if (my_source_file.fail()) {
+        std::cerr << "Reading script '" << path << "' failed\n";
+        exit(64);
+    }
+
     std::stringstream buffer;
     buffer << my_source_file.rdbuf();
 
@@ -70,23 +68,11 @@ void runFile(std::string path)
 }
 
 
-void runPrompt() 
-{
-    // będzie w przyszłości
-    CppLoxError::hadError = false;
-}
-
-
 void run(std::string source)
 {
-    vector<Token *>* tokens = new vector<Token *>();
+    std::vector<Token *>* tokens = new std::vector<Token *>();
     Scanner scanner = Scanner(source, tokens);
     scanner.scanTokens();
-
-    for (auto it = tokens->begin(); it != tokens->end(); it++) {
-        Token* tk = *it;
-        std::cout << **it << std::endl;
-    }
 
     Parser* parser = new Parser(tokens);
     std::vector<Stmt *> *statements = parser->parse();
