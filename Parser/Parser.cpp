@@ -49,6 +49,7 @@ Expr *Parser::BinaryExpr(std::vector<TokenType> types, Expr *(Parser::*productio
 
 Stmt *Parser::declaration() {
     try {
+        if (match({TokenType::CLASS})) return classDeclaration();
         if (match({TokenType::FUN})) return myFunction("function");
         if (match({TokenType::VAR})) return varDeclaration();
 
@@ -58,6 +59,21 @@ Stmt *Parser::declaration() {
         synchronize();
         return nullptr;
     }
+}
+
+
+Stmt *Parser::classDeclaration() {
+    Token *name = consume(TokenType::IDENTIFIER, "Expect class name.");
+    consume(TokenType::LEFT_BRACE, "Expect '{' before class body.");
+
+    std::vector<Function *> *methods = new std::vector<Function *>();
+    while (!check(TokenType::RIGHT_BRACE) && !isAtEnd()) {
+        methods->push_back((Function *)myFunction("method"));
+    }
+
+    consume(TokenType::RIGHT_BRACE, "Expect '}' after class body.");
+
+    return new Class(name, methods);
 }
 
 
@@ -232,6 +248,8 @@ Expr *Parser::primary() {
         return new Literal((Object *)previous()->literal->Clone());
     }
 
+    if (match({TokenType::THIS})) return new This(previous());
+
     if (match({TokenType::IDENTIFIER})) {
         return new Variable(previous()->clone());
     }
@@ -282,7 +300,12 @@ Expr *Parser::call() {
     while (true) { 
         if (match({TokenType::LEFT_PAREN})) {
             expr = finishCall(expr);
-        } else {
+        } 
+        else if (match({TokenType::DOT})) {
+            Token *name = consume(TokenType::IDENTIFIER, "Expect property name after '.'.");
+            expr = new Get(expr, name);
+        }
+        else {
             break;
         }
     }
@@ -332,6 +355,10 @@ Expr *Parser::assignment() {
         if (expr != nullptr && dynamic_cast<Variable *>(expr) != nullptr) { 
             Token *name = ((Variable *)expr)->name->clone();
             return new Assign(name, value);
+        }
+        else if (expr != nullptr && dynamic_cast<Get *>(expr) != nullptr) {
+            Get *get = (Get *)expr;
+            return new Set(get->object, get->name, value);
         }
 
         error(equals, "Invalid assignment target.");

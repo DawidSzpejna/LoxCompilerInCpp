@@ -89,6 +89,18 @@ public:
 };
 
 
+class Get : public Expr {
+public: 
+    Get (Expr *object, Token *name);
+
+    std::string acceptS(ExprVisitor<std::string> *visitor) override;
+    Object *accpetO(ExprVisitor<Object *> *visitor) override;
+
+    Expr *object;
+    Token *name;
+};
+
+
 class Grouping : public Expr {
 public: 
     Grouping ( Expr* expression);
@@ -124,6 +136,30 @@ public:
     Expr *left;
     Token *this_operator;
     Expr *right;
+};
+
+
+class Set : public Expr {
+public: 
+    Set (Expr *object, Token *name, Expr *value);
+
+    std::string acceptS(ExprVisitor<std::string> *visitor) override;
+    Object *accpetO(ExprVisitor<Object *> *visitor) override;
+
+    Expr *object;
+    Token *name;
+    Expr *value;
+};
+
+
+class This : public Expr {
+public: 
+    This (Token *keyword);
+
+    std::string acceptS(ExprVisitor<std::string> *visitor) override;
+    Object *accpetO(ExprVisitor<Object *> *visitor) override;
+
+    Token *keyword;
 };
 
 

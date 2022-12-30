@@ -23,6 +23,10 @@ class Grouping;
 class Variable;
 class Logical;
 class Call;
+class Class;
+class Get;
+class Set;
+class This;
 
 
 #include <iostream>
@@ -50,14 +54,18 @@ public:
 public:
     Object *visitBinaryExpr(Binary* expr) override;
     Object *visitCallExpr(Call *expr) override;
+    Object *visitGetExpr(Get *expr) override;
     Object *visitUnaryExpr(Unary* expr) override;
     Object *visitGroupingExpr(Grouping* expr) override;
     Object *visitLiteralExpr(Literal* expr) override;
     Object *visitLogicalExpr(Logical* expr) override;
+    Object *visitSetExpr(Set *expr) override;
+    Object *visitThisExpr(This *expr) override;
     Object *visitVariableExpr(Variable *expr) override;
     Object *visitAssignExpr(Assign *expr) override;
 
     void visitBlockStmt(Block *stmt) override;
+    void visitClassStmt(Class *stmt) override;
     void visitExpressionStmt(Expression *stmt) override;
     void visitFunctionStmt(Function *stmt) override;
     void visitIfStmt(If *stmt) override;

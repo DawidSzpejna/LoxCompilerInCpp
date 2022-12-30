@@ -23,6 +23,10 @@ class If;
 class While;
 class Function;
 class Return;
+class Class;
+class Get;
+class Set;
+class This;
 
 
 #include "../Visitors/ExprVisitor.h"
@@ -37,7 +41,15 @@ class Return;
 
 enum class FunctionType {
     NONE,
+    INITIALIZER,
+    METHOD,
     FUNCTION
+};
+
+
+enum class ClassType {
+    NONE,
+    CLASS
 };
 
 
@@ -58,20 +70,27 @@ private:
     // point whether the body of function is checking
     FunctionType currentFunction;
 
+    // point wheter the body of method is checking
+    ClassType currentClass;
+
 public:
     Resolver(Interpreter* interpreter);
     ~Resolver();
 
     Object *visitBinaryExpr(Binary* expr) override;
     Object *visitCallExpr(Call *expr) override;
+    Object *visitGetExpr(Get *expr) override;
     Object *visitUnaryExpr(Unary* expr) override;
     Object *visitGroupingExpr(Grouping* expr) override;
     Object *visitLiteralExpr(Literal* expr) override;
     Object *visitLogicalExpr(Logical* expr) override;
+    Object *visitSetExpr(Set *expr) override;
+    Object *visitThisExpr(This *expr) override;
     Object *visitVariableExpr(Variable *expr) override;
     Object *visitAssignExpr(Assign *expr) override;
 
     void visitBlockStmt(Block *stmt) override;
+    void visitClassStmt(Class *stmt) override;
     void visitExpressionStmt(Expression *stmt) override;
     void visitFunctionStmt(Function *stmt) override;
     void visitIfStmt(If *stmt) override;

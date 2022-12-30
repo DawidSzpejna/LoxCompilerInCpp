@@ -3,6 +3,8 @@
 
 
 class LoxCallable;
+class LoxClass;
+class LoxInstance;
 
 
 #include <iostream>
@@ -24,6 +26,12 @@ public:
     bool have_function;
     LoxCallable *fun_object;
 
+    bool have_class;
+    LoxClass *class_object;
+
+    bool have_instance;
+    LoxInstance *instance_object;
+
 public:
     Object();
     Object(std::string str);
@@ -31,6 +39,8 @@ public:
     Object(bool bl);
     Object(void *ptr);
     Object(LoxCallable *fun);
+    Object(LoxClass *klass);
+    Object(LoxInstance *instance);
 
     void ClearMe();
     Object *Clone();

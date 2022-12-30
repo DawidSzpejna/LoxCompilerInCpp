@@ -71,6 +71,26 @@ Object *Call::accpetO(ExprVisitor<Object *> *visitor) {
 }
 
 
+
+// ------------------- Get ------------------------------------------
+
+
+Get::Get (Expr *object, Token *name) {
+    this->object = object;
+    this->name = name;
+}
+
+
+std::string Get::acceptS(ExprVisitor<std::string> *visitor) {
+    return visitor->visitGetExpr(this);
+}
+
+
+Object *Get::accpetO(ExprVisitor<Object *> *visitor) {
+    return visitor->visitGetExpr(this);
+}
+
+
 // ------------------- Grouping --------------------------------------
 
 
@@ -136,6 +156,44 @@ std::string Logical::acceptS(ExprVisitor<std::string> *visitor) {
 
 Object *Logical::accpetO(ExprVisitor<Object *> *visitor) {
     return visitor->visitLogicalExpr(this);
+}
+
+
+// --------------------- Set ----------------------------------------
+
+
+Set::Set(Expr *object, Token *name, Expr *value) {
+    this->object = object;
+    this->name = name;
+    this->value = value;
+}
+
+
+std::string Set::acceptS(ExprVisitor<std::string> *visitor) {
+    return visitor->visitSetExpr(this);
+}
+
+
+Object *Set::accpetO(ExprVisitor<Object *> *visitor) {
+    return visitor->visitSetExpr(this);
+}
+
+
+// --------------------- This ---------------------------------------
+
+
+This::This (Token *keyword) {
+    this->keyword = keyword;
+}
+
+
+std::string This::acceptS(ExprVisitor<std::string> *visitor) {
+    return visitor->visitThisExpr(this);
+}
+
+
+Object *This::accpetO(ExprVisitor<Object *> *visitor) {
+    return visitor->visitThisExpr(this);
 }
 
 

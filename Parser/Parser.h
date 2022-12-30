@@ -32,6 +32,7 @@ public:
     Expr *expresion();
     Expr *BinaryExpr(std::vector<TokenType> types, Expr *(Parser::*production)(void), Parser* parser);
     Stmt *declaration();
+    Stmt *classDeclaration();
     Stmt *varDeclaration();
     Stmt *whileStatement();
     Stmt *statement();

@@ -6,11 +6,14 @@
 #include "../Representation/Expressions.h"
 #include "../Representation/Token.h"
 #include "../Errors/CppLoxError.h"
+#include "../Representation/LoxClass.h"
 
 
 Resolver::Resolver(Interpreter* interpreter) {
     this->interpreter = interpreter;
     this->currentFunction = FunctionType::NONE;
+    this->currentClass = ClassType::NONE;
+
     scopes = new std::vector<std::map<std::string, bool> *>();
 }
 
@@ -27,6 +30,32 @@ void Resolver::visitBlockStmt(Block *stmt) {
     beginScope();
     resolve(stmt->statements);
     endScope();
+}
+
+
+void Resolver::visitClassStmt(Class *stmt) {
+    ClassType enclossingClass = currentClass;
+    currentClass = ClassType::CLASS;
+
+
+    declare(stmt->name);
+    define(stmt->name);
+
+    beginScope();
+    scopes->back()->insert({"this", true});
+
+    for (auto it = stmt->methods->begin(); it != stmt->methods->end(); it++) {
+        FunctionType declaration = FunctionType::METHOD;
+        if ((*it)->name->lexem == CONSTRUCTOR_NAME) {
+            declaration = FunctionType::INITIALIZER;
+        }
+
+        resolveFunctions(*it, declaration);
+    }
+
+    endScope();
+
+    currentClass = enclossingClass;
 }
 
 
@@ -71,6 +100,9 @@ void Resolver::visitReturnStmt(Return *stmt) {
     }
 
     if (stmt->value != nullptr) {
+        if (currentFunction == FunctionType::INITIALIZER) {
+            CppLoxError::error(stmt->keyword, "Can't return a value from an initializer.");
+        }
         resolve(stmt->value);
     }
 }
@@ -126,6 +158,13 @@ Object *Resolver::visitCallExpr(Call *expr) {
 }
 
 
+Object *Resolver::visitGetExpr(Get *expr) {
+    resolve(expr->object);
+
+    return nullptr;
+}
+
+
 Object *Resolver::visitGroupingExpr(Grouping *expr) {
     resolve(expr->expression);
 
@@ -143,6 +182,27 @@ Object *Resolver::visitLiteralExpr(Literal *expr) {
 Object *Resolver::visitLogicalExpr(Logical *expr) {
     resolve(expr->left);
     resolve(expr->right);
+
+    return nullptr;
+}
+
+
+Object *Resolver::visitSetExpr(Set *expr) {
+    resolve(expr->value);
+    resolve(expr->object);
+
+    return nullptr;
+}
+
+
+Object *Resolver::visitThisExpr(This *expr) {
+    if (currentClass == ClassType::NONE) {
+        CppLoxError::error(expr->keyword, "Can't use 'this' outside of a class.");
+        return nullptr;
+    }
+
+
+    resolveLocal(expr, expr->keyword);
 
     return nullptr;
 }

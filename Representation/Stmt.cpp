@@ -17,7 +17,20 @@ void Block::accpetV(StmtVisitor<void> *visitor) {
 }
 
 
-// ------------------- If ----------------------------------------------
+// ------------------- Class ---------------------------------------
+
+
+Class::Class (Token *name, std::vector<Function *> *methods) {
+    this->name = name;
+    this->methods = methods;
+}
+
+void Class::accpetV(StmtVisitor<void> *visitor) {
+    visitor->visitClassStmt(this);
+}
+
+
+// ------------------- If ------------------------------------------
 
 
 If::If (Expr *condition, Stmt *thenBranch, Stmt *elseBranch) {
@@ -32,7 +45,7 @@ void If::accpetV(StmtVisitor<void> *visitor) {
 }
 
 
-// ------------------- Function ----------------------------------------
+// ------------------- Function -------------------------------------
 
 
 Function::Function (Token *name, std::vector<Token *> *params, std::vector<Stmt *> *body) {
@@ -46,7 +59,7 @@ void Function::accpetV(StmtVisitor<void> *visitor) {
 }
 
 
-// ------------------- Expression --------------------------------------
+// ------------------- Expression ------------------------------------
 
 
 Expression::Expression (Expr *expression) {

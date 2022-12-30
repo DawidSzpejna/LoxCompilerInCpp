@@ -1,0 +1,86 @@
+print "Test 0.";
+
+class DevonshireCream {
+  serveOn() {
+    return "Scones";
+  }
+}
+
+print DevonshireCream; // Prints "DevonshireCream".
+
+// -----------------------------------------------------
+print "Test 1.";
+
+class Bagel {}
+var bagel = Bagel();
+print bagel; // Prints "Bagel instance".
+
+// -----------------------------------------------------
+print "Test 2.";
+
+bagel.myValue = "filed";
+print bagel.myValue + " of bagel instance"; // Prints "filed of bagel instance"
+
+// -----------------------------------------------------
+print "Test 3.";
+
+class Bacon {
+  eat() {
+    print "Crunch crunch crunch!";
+  }
+}
+
+Bacon().eat(); // Prints "Crunch crunch crunch!".
+
+// ------------------------------------------------------
+print "Test 4.";
+
+class Thing {
+  getCallback() {
+    fun localFunction() {
+      print this;
+    }
+
+    return localFunction;
+  }
+}
+
+var callback = Thing().getCallback();
+callback(); // Prints "Thing instance"
+
+class Cake {
+  taste() {
+    var adjective = "delicious";
+    print "The " + this.flavor + " cake is " + adjective + "!";
+  }
+}
+
+var cake = Cake();
+cake.flavor = "Polish chocolate";
+cake.taste(); // Prints "The Polish chocolate cake is delicious!".
+
+// -------------------------------------------------------
+print "Test 5.";
+
+class Foo {
+  init() {
+    print this;
+  }
+}
+
+var foo = Foo();  // Prints "Foo instance"
+print foo.init(); // Prints "Foo instance
+                  //         Foo instance"
+
+// --------------------------------------------------------
+print "Test 6.";
+
+class Too {
+  init() {
+    print "Before return";
+    return;
+    print "After return";
+  }
+}
+
+var too = Too(); // Prints "Before return"

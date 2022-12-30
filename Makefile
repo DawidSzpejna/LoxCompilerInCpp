@@ -7,7 +7,8 @@ DEBUG = -g
 
 
 .PHONY: all parser scanner representation tokens \
-		expressions main astgen cleanAst returnexception resolver
+		expressions main astgen cleanAst returnexception resolver loxclass loxfunction \
+		loxinstance
 
 
 #################################################
@@ -16,9 +17,10 @@ DEBUG = -g
 
 
 all: preparedir main parser scanner tokens expressions errorcatcher commonobject \
-	 runtimeerror interpreter stmt environment callablers returnexception resolver
+	 runtimeerror interpreter stmt environment loxfunction returnexception resolver \
+	 loxclass loxinstance
 	@$(CXX) $(DEBUG) $(CXXFLAGS) \
-		$(BUILDDIR)/LoxCallable.o \
+		$(BUILDDIR)/LoxFunction.o \
 		$(BUILDDIR)/CommonObject.o \
 		$(BUILDDIR)/CppLoxError.o \
 		$(BUILDDIR)/Parser.o \
@@ -32,6 +34,8 @@ all: preparedir main parser scanner tokens expressions errorcatcher commonobject
 		$(BUILDDIR)/Environment.o \
 		$(BUILDDIR)/ReturnException.o \
 		$(BUILDDIR)/Resolver.o \
+		$(BUILDDIR)/LoxClass.o \
+		$(BUILDDIR)/LoxInstance.o \
 		-o cpplox
 	@printf "CppLox is completed\n"
 
@@ -81,14 +85,20 @@ commonobject: Representation/CommonObject.cpp
 runtimeerror: Errors/Runtime/RuntimeError.cpp
 	$(SIL)$(CXX) -c $(DEBUG) $(CXXFLAGS) Errors/Runtime/RuntimeError.cpp -o $(BUILDDIR)/RuntimeError.o
 
-callablers: Representation/LoxCallable.cpp
-	$(SIL)$(CXX) -c $(DEBUG) $(CXXFLAGS) Representation/LoxCallable.cpp -o $(BUILDDIR)/LoxCallable.o
+loxfunction: Representation/LoxFunction.cpp
+	$(SIL)$(CXX) -c $(DEBUG) $(CXXFLAGS) Representation/LoxFunction.cpp -o $(BUILDDIR)/LoxFunction.o
 
 returnexception: Errors/GoodErrors/ReturnException.cpp
 	$(SIL)$(CXX) -c $(DEBUG) $(CXXFLAGS) Errors/GoodErrors/ReturnException.cpp -o $(BUILDDIR)/ReturnException.o
 
 resolver: Resolver/Resolver.cpp
 	$(SIL)$(CXX) -c $(DEBUG) $(CXXFLAGS) Resolver/Resolver.cpp -o $(BUILDDIR)/Resolver.o
+
+loxclass: Representation/LoxClass.cpp
+	$(SIL)$(CXX) -c $(DEBUG) $(CXXFLAGS) Representation/LoxClass.cpp -o $(BUILDDIR)/LoxClass.o
+
+loxinstance: Representation/LoxInstance.cpp
+	$(SIL)$(CXX) -c $(DEBUG) $(CXXFLAGS) Representation/LoxInstance.cpp -o $(BUILDDIR)/LoxInstance.o
 
 
 #################################################

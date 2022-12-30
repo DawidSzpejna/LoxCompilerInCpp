@@ -10,13 +10,14 @@ class If;
 class While;
 class Function;
 class Return;
+class Class;
 
 
 template <typename R>
 class StmtVisitor{
 public:
     virtual R visitBlockStmt(Block *stmt) = 0;
-    //virtual R visitClassStmt(Class stmt) = 0;
+    virtual R visitClassStmt(Class *stmt) = 0;
     virtual R visitExpressionStmt(Expression *stmt) = 0;
     virtual R visitFunctionStmt(Function *stmt) = 0;
     virtual R visitIfStmt(If *stmt) = 0;

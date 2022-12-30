@@ -5,6 +5,9 @@
 #include "../Representation/Expressions.h"
 #include "../Representation/Environment.h"
 #include "../Representation/LoxCallable.h"
+#include "../Representation/LoxFunction.h"
+#include "../Representation/LoxInstance.h"
+#include "../Representation/LoxClass.h"
 #include "../Errors/CppLoxError.h"
 #include "../Errors/Runtime/RuntimeError.h"
 #include "../Representation/CommonObject.h"
@@ -171,11 +174,11 @@ Object *Interpreter::visitCallExpr(Call *expr) {
         arguments->push_back((Object *)evaluate(*it));
     }
 
-    if (!callee->have_function) {
+    if (callee->have_function != true && callee->have_class != true) {
         throw RuntimeError(expr->paren, "Can only call functions and classes.");
     }
 
-    LoxCallable *function = callee->fun_object;
+    LoxCallable *function = callee->have_function ? callee->fun_object : callee->class_object;
 
     if (function->arity() != arguments->size()) {
         std::stringstream message;
@@ -185,6 +188,16 @@ Object *Interpreter::visitCallExpr(Call *expr) {
     }
 
     return function->call(this, arguments);
+}
+
+
+Object *Interpreter::visitGetExpr(Get *expr) {
+    Object *object = evaluate(expr->object);
+    if (object->have_instance) {
+        return object->instance_object->get(expr->name);
+    }
+
+    throw RuntimeError(expr->name, "Only instances have properties.");
 }
 
 
@@ -238,6 +251,27 @@ Object *Interpreter::visitLogicalExpr(Logical* expr) {
 }
 
 
+Object *Interpreter::visitSetExpr(Set *expr) {
+    // 1) Evaluate the object.
+    Object *object = evaluate(expr->object);
+
+    // 2) Raise a runtime error if it's not an instance of a class.
+    if (object->have_instance == false) {
+        throw RuntimeError(expr->name, "Only instances have fields.");
+    }
+
+    // 3) Evaluate the value.
+    Object *value = evaluate(expr->value);
+    object->instance_object->set(expr->name, value);
+    return value;
+}
+
+
+Object *Interpreter::visitThisExpr(This *expr) {
+    return lookUpVariable(expr->keyword, expr);
+}
+
+
 Object *Interpreter::visitVariableExpr(Variable *expr) {
     return lookUpVariable(expr->name, expr);
 }
@@ -266,13 +300,28 @@ void Interpreter::visitBlockStmt(Block *stmt) {
 }
 
 
+void Interpreter::visitClassStmt(Class *stmt) {
+    environment->define(stmt->name->lexem, nullptr);
+
+    std::map<std::string, LoxFunction *> *methods = new std::map<std::string, LoxFunction *>();
+    for (auto it = stmt->methods->begin(); it != stmt->methods->end(); it++) {
+        LoxFunction *function = new LoxFunction(*it, environment, (*it)->name->lexem == "init");
+        methods->insert({(*it)->name->lexem, function});
+    }
+
+    LoxClass *klass = new LoxClass(stmt->name->lexem, methods);
+    Object *tmp = new Object(klass);
+    environment->assign(stmt->name, tmp);
+}
+
+
 void Interpreter::visitExpressionStmt(Expression *stmt) {
     evaluate(stmt->expression);
 }
 
 
 void Interpreter::visitFunctionStmt(Function *stmt) {
-    LoxFunction *function = new LoxFunction(stmt, this->environment);
+    LoxFunction *function = new LoxFunction(stmt, this->environment, false);
     environment->define(stmt->name->lexem, new Object(function));
 }
 

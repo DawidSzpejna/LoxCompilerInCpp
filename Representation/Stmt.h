@@ -53,6 +53,17 @@ public:
 };
 
 
+class Class : public Stmt {
+public: 
+    Class (Token *name, std::vector<Function *> *methods);
+
+    void accpetV(StmtVisitor<void> *visitor) override;
+
+    Token *name;
+    std::vector<Function *> *methods;
+};
+
+
 class Expression : public Stmt {
 public: 
     Expression (Expr *expression);

@@ -1,6 +1,6 @@
 expression     → assignment ;
 
-assignment     → IDENTIFIER "=" assignment | logic_or ;
+assignment     → (call "." )? IDENTIFIER "=" assignment | logic_or ;
 
 logic_or       → logic_and ( "or" logic_and )* ;
 
@@ -16,7 +16,7 @@ factor         → unary ( ( "/" | "*" ) unary )* ;
 
 unary          → ( "!" | "-" ) unary | call ;
 
-call           → primary ( "(" arguments? ")" )* ;
+call           → primary ( "(" arguments? ")" | "." IDENTIFIER )* ;
 
 primary        → NUMBER | STRING | "true" | "false" | "nil" | "(" expression ")" | IDENTIFIER ;
 
@@ -30,7 +30,7 @@ parameters     → IDENTIFIER ( "," IDENTIFIER )* ;
 
 program        → declaration* EOF ;
 
-declaration    → funDecl | varDecl | statement ;
+declaration    → classDecl | funDecl | varDecl | statement ;
 
 statement      → exprStmt | forStmt | ifStmt | printStmt | returnStmt | whileStmt | block ;
 
@@ -53,3 +53,5 @@ funDecl        → "fun" function ;
 function       → IDENTIFIER "(" parameters? ")" block ;
 
 returnStmt     → "return" expression? ";" ;
+
+classDecl      → "class" IDENTIFIER "{" function* "}" ;
