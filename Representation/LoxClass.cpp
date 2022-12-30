@@ -12,15 +12,20 @@
 #include "../Errors/GoodErrors/ReturnException.h"
 
 
-LoxClass::LoxClass(std::string name,  std::map<std::string, LoxFunction *> *methods) {
+LoxClass::LoxClass(std::string name, LoxClass *superclass, std::map<std::string, LoxFunction *> *methods) {
     this->name = name;
     this->methods = methods;
+    this->superclass = superclass;
 }
 
 
 LoxFunction *LoxClass::findMethod(std::string name) {
     if (methods->count(name) != 0) {
         return methods->at(name);
+    }
+
+    if (superclass != nullptr) {
+        return superclass->findMethod(name);
     }
 
     return nullptr;

@@ -18,7 +18,7 @@ unary          → ( "!" | "-" ) unary | call ;
 
 call           → primary ( "(" arguments? ")" | "." IDENTIFIER )* ;
 
-primary        → NUMBER | STRING | "true" | "false" | "nil" | "(" expression ")" | IDENTIFIER ;
+primary        → NUMBER | STRING | "true" | "false" | "nil" | "this" | "(" expression ")" | IDENTIFIER | "super" "." IDENTIFIER ;
 
 
 
@@ -54,4 +54,4 @@ function       → IDENTIFIER "(" parameters? ")" block ;
 
 returnStmt     → "return" expression? ";" ;
 
-classDecl      → "class" IDENTIFIER "{" function* "}" ;
+classDecl      → "class" IDENTIFIER ( "<" IDENTIFIER )? "{" function* "}" ;

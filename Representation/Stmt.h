@@ -2,39 +2,15 @@
 #define _CPPLOX_STMT_
 
 
-#include <vector>
-
-
-// class Expr;
-// class Expression;
-// class Print;
-// class Var;
-// class Block;
-// class If;
-// class While;
-// class Function;
-
-
-// template <typename R>
-// class StmtVisitor{
-// public:
-//     virtual R visitBlockStmt(Block *stmt) = 0;
-//     //virtual R visitClassStmt(Class stmt) = 0;
-//     virtual R visitExpressionStmt(Expression *stmt) = 0;
-//     virtual R visitFunctionStmt(Function *stmt) = 0;
-//     virtual R visitIfStmt(If *stmt) = 0;
-//     virtual R visitPrintStmt(Print *stmt) = 0;
-//     //virtual R visitReturnStmt(Return stmt) = 0;
-//     virtual R visitVarStmt(Var *stmt) = 0;
-//     virtual R visitWhileStmt(While *stmt) = 0;
-// };
+class Expr;
+class Token;
+class Variable;
 
 
 #include "../Visitors/StmtVisitor.h"
 
 
-class Expr;
-class Token;
+#include <vector>
 
 
 class Stmt {
@@ -55,11 +31,12 @@ public:
 
 class Class : public Stmt {
 public: 
-    Class (Token *name, std::vector<Function *> *methods);
+    Class (Token *name, Variable *superclass, std::vector<Function *> *methods);
 
     void accpetV(StmtVisitor<void> *visitor) override;
 
     Token *name;
+    Variable *superclass;
     std::vector<Function *> *methods;
 };
 

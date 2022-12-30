@@ -267,6 +267,22 @@ Object *Interpreter::visitSetExpr(Set *expr) {
 }
 
 
+Object *Interpreter::visitSuperExpr(Super *expr) {
+    int distance = locals->at(expr);
+    LoxClass *superclass = environment->getAt(distance, "super")->class_object;
+
+    LoxInstance *object = environment->getAt(distance - 1, "this")->instance_object;
+
+    LoxFunction *method = superclass->findMethod(expr->method->lexem);
+
+    if (method == nullptr) {
+        throw RuntimeError(expr->method, "Undefinded property '" + expr->method->lexem + "'.");
+    }
+
+    return new Object(method->bind(object));
+}
+
+
 Object *Interpreter::visitThisExpr(This *expr) {
     return lookUpVariable(expr->keyword, expr);
 }
@@ -301,16 +317,36 @@ void Interpreter::visitBlockStmt(Block *stmt) {
 
 
 void Interpreter::visitClassStmt(Class *stmt) {
+    LoxClass *superclass = nullptr;
+    if (stmt->superclass != nullptr) {
+        Object *tmp = evaluate(stmt->superclass);
+        if (tmp->have_class == false) {
+            throw RuntimeError(stmt->superclass->name, "Superclass must be a class.");
+        }
+
+        superclass = tmp->class_object;
+    }
+
     environment->define(stmt->name->lexem, nullptr);
+
+    if (stmt->superclass != nullptr) {
+        environment = new Environment(environment);
+        environment->define("super", new Object(superclass));
+    }
 
     std::map<std::string, LoxFunction *> *methods = new std::map<std::string, LoxFunction *>();
     for (auto it = stmt->methods->begin(); it != stmt->methods->end(); it++) {
-        LoxFunction *function = new LoxFunction(*it, environment, (*it)->name->lexem == "init");
+        LoxFunction *function = new LoxFunction(*it, environment, (*it)->name->lexem == CONSTRUCTOR_NAME);
         methods->insert({(*it)->name->lexem, function});
     }
 
-    LoxClass *klass = new LoxClass(stmt->name->lexem, methods);
+    LoxClass *klass = new LoxClass(stmt->name->lexem, superclass, methods);
     Object *tmp = new Object(klass);
+
+    if (superclass != nullptr) {
+        environment = environment->enclosing;
+    }
+
     environment->assign(stmt->name, tmp);
 }
 

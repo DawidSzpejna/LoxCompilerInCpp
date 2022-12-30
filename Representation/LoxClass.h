@@ -26,8 +26,9 @@ private:
 
 public:
     std::string name;
+    LoxClass *superclass;
 
-    LoxClass(std::string name, std::map<std::string, LoxFunction *> *methods);
+    LoxClass(std::string name, LoxClass *superclass, std::map<std::string, LoxFunction *> *methods);
 
     LoxFunction *findMethod(std::string name);
     int arity() override;

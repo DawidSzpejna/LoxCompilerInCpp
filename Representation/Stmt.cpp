@@ -20,9 +20,10 @@ void Block::accpetV(StmtVisitor<void> *visitor) {
 // ------------------- Class ---------------------------------------
 
 
-Class::Class (Token *name, std::vector<Function *> *methods) {
+Class::Class (Token *name, Variable *superclass, std::vector<Function *> *methods) {
     this->name = name;
     this->methods = methods;
+    this->superclass = superclass;
 }
 
 void Class::accpetV(StmtVisitor<void> *visitor) {

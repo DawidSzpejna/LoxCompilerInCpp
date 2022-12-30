@@ -41,6 +41,22 @@ void Resolver::visitClassStmt(Class *stmt) {
     declare(stmt->name);
     define(stmt->name);
 
+    // To find a simple cycle in the inheritance chain.
+    if (stmt->superclass != nullptr &&
+            stmt->name->lexem == stmt->superclass->name->lexem) {
+        CppLoxError::error(stmt->superclass->name, "A class can't inherit from itself.");
+    }
+
+    if (stmt->superclass != nullptr) {
+        currentClass = ClassType::SUBCLASS;
+        resolve(stmt->superclass);
+    }
+
+    if (stmt->superclass != nullptr) {
+        beginScope();
+        scopes->back()->insert({"super", true});
+    }
+
     beginScope();
     scopes->back()->insert({"this", true});
 
@@ -54,6 +70,8 @@ void Resolver::visitClassStmt(Class *stmt) {
     }
 
     endScope();
+
+    if (stmt->superclass != nullptr) endScope();
 
     currentClass = enclossingClass;
 }
@@ -190,6 +208,20 @@ Object *Resolver::visitLogicalExpr(Logical *expr) {
 Object *Resolver::visitSetExpr(Set *expr) {
     resolve(expr->value);
     resolve(expr->object);
+
+    return nullptr;
+}
+
+
+Object *Resolver::visitSuperExpr(Super *expr) {
+    if (currentClass == ClassType::NONE) {
+        CppLoxError::error(expr->keyword, "Can't use 'super' outside of a class.");
+    }
+    else if (currentClass != ClassType::SUBCLASS) {
+        CppLoxError::error(expr->keyword, "Can't user 'super' in a class with no superclass.");
+    }
+
+    resolveLocal(expr, expr->keyword);
 
     return nullptr;
 }

@@ -27,6 +27,7 @@ class Class;
 class Get;
 class Set;
 class This;
+class Super;
 
 
 #include "../Visitors/ExprVisitor.h"
@@ -49,7 +50,8 @@ enum class FunctionType {
 
 enum class ClassType {
     NONE,
-    CLASS
+    CLASS,
+    SUBCLASS
 };
 
 
@@ -85,6 +87,7 @@ public:
     Object *visitLiteralExpr(Literal* expr) override;
     Object *visitLogicalExpr(Logical* expr) override;
     Object *visitSetExpr(Set *expr) override;
+    Object *visitSuperExpr(Super *expr) override;
     Object *visitThisExpr(This *expr) override;
     Object *visitVariableExpr(Variable *expr) override;
     Object *visitAssignExpr(Assign *expr) override;

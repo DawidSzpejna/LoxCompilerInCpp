@@ -76,6 +76,7 @@ int main(int argc, char** argv)
         "Literal  : Object value",
         "Logical  : Expr left, Token this_operator, Expr right",
         "Set      : Expr object, Token name, Expr value",
+        "Super    : Token keyword, Token method",
         "This     : Token keyword",
         "Unary : Token this_operator, Expr right",
         "Variable : Token name"
@@ -83,7 +84,7 @@ int main(int argc, char** argv)
     
     defineAst(outputDir, "Stmt", std::list<std::string> {
         "Block : std::vector<Stmt *> *statements",
-        "Class      : Token name, List<Stmt.Function> methods",
+        "Class      : Token name, Variable superclass, List<Stmt.Function> methods",
         "Expression : Expr expression",
         "Function   : Token name, List<Token> params, List<Stmt> body",
         "If         : Expr condition, Stmt thenBranch, Stmt elseBranch",

@@ -12,10 +12,11 @@ class Token;
 
 class Environment {
 private:
-    Environment *enclosing;
     std::map<std::string, Object *>* values;
 
 public:
+    Environment *enclosing;
+    
     Environment();
     Environment(Environment *enclosing);
     ~Environment();

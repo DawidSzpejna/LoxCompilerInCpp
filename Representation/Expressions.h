@@ -152,6 +152,18 @@ public:
 };
 
 
+class Super : public Expr {
+public: 
+    Super (Token *keyword, Token *method);
+
+    std::string acceptS(ExprVisitor<std::string> *visitor) override;
+    Object *accpetO(ExprVisitor<Object *> *visitor) override;
+
+    Token *keyword;
+    Token *method;
+};
+
+
 class This : public Expr {
 public: 
     This (Token *keyword);

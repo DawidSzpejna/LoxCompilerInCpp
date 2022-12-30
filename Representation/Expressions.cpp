@@ -179,6 +179,25 @@ Object *Set::accpetO(ExprVisitor<Object *> *visitor) {
 }
 
 
+// --------------------- Super --------------------------------------
+
+
+Super::Super (Token *keyword, Token *method) {
+    this->keyword = keyword;
+    this->method = method;
+}
+
+
+std::string Super::acceptS(ExprVisitor<std::string> *visitor) {
+    return visitor->visitSuperExpr(this);
+}
+
+
+Object *Super::accpetO(ExprVisitor<Object *> *visitor) {
+    return visitor->visitSuperExpr(this);
+}
+
+
 // --------------------- This ---------------------------------------
 
 
